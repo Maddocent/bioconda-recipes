@@ -1,44 +1,53 @@
+{% set name = "percolator" %}
+{% set version = "3.9" %}
+
 package:
-  name: percolator
-  version: '3.0'
+  name: {{ name|lower }}
+  version: {{ version }}
 
 source:
-  fn: rel-3-00.tar.gz
-  url: https://github.com/percolator/percolator/archive/rel-3-00.tar.gz
-  md5: de87c96643fed652e454ac492ce850b4
+  url: https://github.com/percolator/percolator/archive/refs/tags/rel-3-09.tar.gz
+  sha256: 2caed6362638f401a1527b09dcb2888320dab10fe003f76f584cfd395ed30f73
 
 build:
   number: 1
-  string: boost_1.62{{PKG_BUILDNUM}}
-  skip: True # [osx]
+  skip: True  # [osx]
+  run_exports:
+    - {{ pin_subpackage('percolator', max_pin="x") }}
 
 requirements:
   build:
-    - cmake ==2.8.10.2
-    - gcc
-    - zlib
-    - boost ==1.62 # Specify version to ensure install from conda-forge and get static libs
-    - tokyocabinet
+    - make
+    - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
+    - cmake
+  host:
+    - libboost-devel
     - sqlite
     - bzip2
-    - xerces-c ==3.1.2
-    - xsd
+    - zlib
   run:
-    - gcc
-    - zlib
-    - tokyocabinet
+    - libboost
     - sqlite
-    - bzip2
-    - xerces-c ==3.1.2
-    - xsd
-
+    - zlib
 
 test:
   commands:
-    - percolator --help 2>&1 > /dev/null | grep "Percolator version 3.00"
-    - msgf2pin --help
+    - percolator $PREFIX/testdata/percolatorTab > /dev/null
 
 about:
-  home: https://github.com/percolator/percolator
-  license: Apache 2.0
-  summary: Semi-supervised learning for peptide identification from shotgun proteomics datasets
+  home: "https://github.com/percolator/percolator"
+  license: Apache-2.0
+  license_family: APACHE
+  license_file: "license.txt"
+  summary: "Semi-supervised learning for peptide identification from shotgun proteomics datasets."
+  dev_url: "https://github.com/percolator/percolator"
+  doc_url: "http://percolator.ms"
+
+extra:
+  additional-platforms:
+    - linux-aarch64
+  identifiers:
+    - biotools:Percolator
+    - doi:10.1007/s13361-016-1460-7
+    - usegalaxy-eu:percolator
